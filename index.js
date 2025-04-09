@@ -9,10 +9,11 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "/views"));
+app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
+app.use(express.static(path.join(__dirname, "/public")));
 
 main().then(() => {
     console.log("Connected to db");
@@ -41,7 +42,7 @@ app.get("/listings/:id", async(req, res) => {
     // console.log("Handling /listings/:id route, ID:", req.params.id);
     let {id} = req.params;
     let details = await Listing.findById(id);
-    // console.log(details);
+    console.log(details);
     res.render("listings/show.ejs", {details});
 });
 
@@ -79,6 +80,7 @@ app.get("/listings/:id/edit", async(req, res) => {
 // Update Route
 app.put("/listings/:id", async(req, res) => {
     let {id} = req.params;
+    console.log(req.body.listing);
     await Listing.findByIdAndUpdate(id, {...req.body.listing}, {runValidators: true, new: true});
     res.redirect(`/listings/${id}`);
 });

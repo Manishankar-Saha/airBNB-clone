@@ -1,24 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wanderlust</title>
-</head>
-<body>
+<% layout("/layouts/boilerplate") %>
+
+<div class="row mt-3">
+  <div class="col-8 offset-3 show-card">
     <h3>Show Details of <u><%= details.title %></u></h3>
-    <ul>
-        <li><%= details.title %></li>
-        <li><%= details.description %></li>
-        <li>&#8377;<%= details.price.toLocaleString("en-In") %></li>
-        <li><%= details.location %></li>
-        <li><%= details.country %></li>
-    </ul>
-    <form method="GET" action="/listings/<%= details._id %>/edit">
-        <button>Edit</button>
-    </form><br>
-    <form method="POST" action="/listings/<%= details._id %>?_method=DELETE">
-        <button>Delete</button>
-    </form>
-</body>
-</html>
+  </div>
+  <div class="col-6 offset-3">
+    <div class="card">
+      <img
+        src="<%= details.image %>"
+        class="card-img-top show-img"
+        alt="listing_img"
+      />
+      <div class="card-body">
+        <p class="card-text">
+          <b><%= details.title %></b><br>
+          <%= details.description %> <br />
+          &#8377;<%= details.price ? details.price.toLocaleString("en-In") : "Price Unavailable"%> <br />
+          <%= details.location %> <br />
+          <%= details.country %> <br />
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="btns">
+  <a href="/listings/<%= details._id %>/edit" class="btn btn-dark edit-btn col-1 offset-3">Edit</a>
+
+  <form method="POST" action="/listings/<%= details._id %>?_method=DELETE">
+    <button class="btn btn-dark offset-5">Delete</button>
+  </form>
+</div>
