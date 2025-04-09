@@ -120,3 +120,7 @@ body{
     padding-left: 0;
     padding-right: 0;
 }
+
+.show-card a{
+    text-decoration: none;
+}
