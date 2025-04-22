@@ -4,7 +4,11 @@
   <div class="col-8 offset-2">
     <h3>Edit Details</h3>
 
-    <form method="POST" action="/listings/<%= currDetails._id %>?_method=PUT">
+    <form
+      method="POST"
+      action="/listings/<%= currDetails._id %>?_method=PUT"
+      novalidate
+      class="needs-validation">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input
@@ -12,14 +16,18 @@
           type="text"
           value="<%= currDetails.title %>"
           class="form-control"
-        />
+          id="title"
+          required />
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter a valid Title</div>
       </div>
 
       <div class="mb-3">
         <label for="descriotion" class="form-label">Description</label>
-        <textarea name="listing[description]" class="form-control"
-        ><%= currDetails.description %></textarea
+        <textarea name="listing[description]" class="form-control" required>
+<%= currDetails.description %></textarea
         >
+        <div class="invalid-feedback">Please enter a short description</div>
       </div>
 
       <div class="mb-3">
@@ -29,7 +37,8 @@
           type="text"
           value="<%= currDetails.image%>"
           class="form-control"
-        />
+          required />
+        <div class="invalid-feedback">Please enter a valid image URL</div>
       </div>
 
       <div class="row">
@@ -40,7 +49,8 @@
             type="number"
             value="<%= currDetails.price %>"
             class="form-control"
-          />
+            required />
+          <div class="invalid-feedback">Please enter a valid price</div>
         </div>
 
         <div class="mb-3 col-md-8">
@@ -50,7 +60,8 @@
             type="text"
             value="<%= currDetails.country %>"
             class="form-control"
-          />
+            required />
+          <div class="invalid-feedback">Country should be valid</div>
         </div>
       </div>
 
@@ -61,11 +72,18 @@
           type="text"
           value="<%= currDetails.location %>"
           class="form-control"
-        />
+          required />
+        <div class="invalid-feedback">Please enter a valid location</div>
       </div>
       <button class="btn btn-dark edit-btn mt-3">Save Edit</button>
-      <a href="/listings/<%= currDetails._id %>" class="btn btn-dark mt-3 offset-1">Back</a>
+      <a
+        href="/listings/<%= currDetails._id %>"
+        class="btn btn-dark mt-3 offset-1"
+        >Back</a
+      >
     </form>
-    <br>
+    <br />
   </div>
 </div>
+
+<script src="/js/script.js"></script>

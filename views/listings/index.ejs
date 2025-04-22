@@ -1,6 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 <br />
-<h3>All listings</h3> <br>
+<h3>All listings</h3>
+<br />
 <!-- <form method="GET" action="/listings/new">
         <button>Create new Listing</button>
     </form> -->
@@ -13,10 +14,9 @@
         src="<%= listing.image %>"
         class="card-img-top"
         alt="listing_image"
-        style="height: 20rem"
-      />
+        style="height: 20rem" />
       <div class="card-img-overlay"></div>
-      <div class="card-body">
+      <div class="card-body mt-2">
         <p class="card-text">
           <b><%= listing.title %></b><br />
           &#8377;<%= listing.price ? listing.price.toLocaleString("en-In") :

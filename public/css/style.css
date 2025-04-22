@@ -5,7 +5,7 @@ body{
     min-height: 100vh;
 }
 
-.cotainer{
+.container{
     flex: 1;
 }
 
@@ -85,14 +85,10 @@ body{
 /* card-effect or overlay-effect */
 .card-img-overlay{
     opacity: 0;
-    box-shadow: 0 4px 8px black;
-    transition: 0.3s;
 }
-
 .card-img-overlay:hover{
-    opacity: 1;
-    border-radius: 1rem 1rem 0.2rem 0.2rem;
-    box-shadow: 2px 8px 16px grey;
+    opacity: 0.2;
+    background-color: white;
 }
 
 /* new page btn */
