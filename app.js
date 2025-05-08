@@ -6,8 +6,6 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
@@ -22,16 +20,9 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-let sessionOptions = {
-  secret: "mySuperSecretCode",
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    expires: Date.now() + 7 * 24 * 3600 * 1000,
-    maxAge: 7 * 24 * 3600 * 1000,
-    httpOnly: true,
-  },
-};
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
 
 main()
   .then(() => {
@@ -44,6 +35,17 @@ main()
 async function main() {
   mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
 }
+
+let sessionOptions = {
+  secret: "mySuperSecretCode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 3600 * 1000,
+    maxAge: 7 * 24 * 3600 * 1000,
+    httpOnly: true,
+  },
+};
 
 app.get("/", (req, res) => {
   res.send("Root is working");
@@ -68,18 +70,19 @@ app.use((req, res, next) => {
 });
 
 // Demo user
-app.get("/demoUser", async (req, res) => {
-  let fakeUser = new User({
-    email: "student@gmail.com",
-    username: "delta-student",
-  });
+// app.get("/demoUser", async (req, res) => {
+//   let fakeUser = new User({
+//     email: "student@gmail.com",
+//     username: "delta-student",
+//   });
 
-  let registereduser = await User.register(fakeUser, "myPassword");
-  res.send(registereduser);
-});
+//   let registereduser = await User.register(fakeUser, "myPassword");
+//   res.send(registereduser);
+// });
 
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
 
 // Error for test
 app.use((req, res, next) => {
