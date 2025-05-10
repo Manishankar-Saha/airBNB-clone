@@ -13,17 +13,21 @@
         alt="listing_img" />
       <div class="card-body">
         <p class="card-text">
-          <%= details.description %> <br />
-          &#8377;<%= details.price ? details.price.toLocaleString("en-In") :
-          "Price Unavailable"%> <br />
-          <%= details.location %> <br />
-          <%= details.country %> <br />
+          <b>Owned by: <i><%= details.owner.username %></i></b>
         </p>
+        <p class="card-text"><%= details.description %></p>
+        <p class="card-text">
+          &#8377;<%= details.price ? details.price.toLocaleString("en-In") :
+          "Price Unavailable"%>
+        </p>
+        <p class="card-text"><%= details.location %></p>
+        <p class="card-text"><%= details.country %></p>
       </div>
     </div>
   </div>
 </div>
 
+<% if (currUser && currUser._id.equals(details.owner._id)) {%>
 <div class="btns">
   <a
     href="/listings/<%= details._id %>/edit"
@@ -36,9 +40,12 @@
   </form>
 </div>
 <br />
+<% } %>
 
 <!-- Review Form -->
+
 <div class="col-8 offset-3 mb-3">
+  <% if(currUser) {%>
   <hr />
   <h4>Leave a Review</h4>
   <form
@@ -70,7 +77,7 @@
     </div>
     <button class="btn btn-outline-info mb-3">Submit</button>
   </form>
-
+  <% } %>
   <hr />
 
   <!-- show reviews -->
@@ -80,7 +87,7 @@
     <% for (let review of details.reviews) {%>
     <div class="card col-5 ms-3 mb-3">
       <div class="class-body">
-        <h5 class="card-title">Sourav</h5>
+        <h5 class="card-title">@<%= review.author.username %></h5>
         <p class="card-text"><%= review.comment %></p>
         <p class="card-text"><%= review.rating %> &#9733;</p>
         <form

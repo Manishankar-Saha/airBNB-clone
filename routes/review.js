@@ -2,33 +2,26 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 
 const wrapAsync = require("../utils/wrapAsync.js");
-const { reviewSchema } = require("../schema.js");
 const Listing = require("../models/listing.js");
-const ExpressError = require("../utils/ExpressError.js");
 const Review = require("../models/review.js");
-
-// Schema validation middleware
-
-const validateReview = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(408, errMsg);
-  } else {
-    next();
-  }
-};
+const {
+  validateReview,
+  isLoggedIn,
+  isReviewAuthor,
+  saveRedirectUrl,
+} = require("../middleware.js");
 
 // Reviews
 // Post Review Route
 router.post(
   "/", // we have to cut the common part from routes , here it is -> /listings/:id/reviews
+  isLoggedIn,
   validateReview,
   wrapAsync(async (req, res) => {
     // console.log(req.params.id);
     let listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review);
-
+    newReview.author = req.user._id;
     listing.reviews.push(newReview);
 
     await newReview.save();
@@ -42,6 +35,9 @@ router.post(
 // Delete review Route
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  saveRedirectUrl,
+  isReviewAuthor,
   wrapAsync(async (req, res) => {
     let { id, reviewId } = req.params;
 
@@ -49,7 +45,8 @@ router.delete(
     await Review.findByIdAndDelete(reviewId);
 
     req.flash("success", "Review Deleted");
-    res.redirect(`/listings/${id}`);
+    let redirectUrl = res.locals.redirectUrl || `/listings/${id}`;
+    res.redirect(redirectUrl);
   })
 );
 
