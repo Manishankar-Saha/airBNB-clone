@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const port = 8080;
@@ -46,10 +50,6 @@ let sessionOptions = {
     httpOnly: true,
   },
 };
-
-app.get("/", (req, res) => {
-  res.send("Root is working");
-});
 
 app.use(session(sessionOptions));
 app.use(flash());

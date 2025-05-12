@@ -29,13 +29,14 @@ module.exports.showAllListings = async (req, res) => {
 };
 
 module.exports.createNewListing = async (req, res, next) => {
-  // if (!req.body.listing) {
-  //   throw new ExpressError(400, "Send valid data for listing");
-  // }
+  let url = req.file.path;
+  let filename = req.file.filename;
+
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
+  newListing.image = { url, filename };
   await newListing.save();
-  // console.log(newListing);
+  console.log(newListing);
   req.flash("success", "New Listing Created");
   res.redirect("/listings");
 };
@@ -47,18 +48,31 @@ module.exports.renderEditForm = async (req, res) => {
     req.flash("error", "Listing doesn't exist");
     return res.redirect("/listings");
   }
-  res.render("listings/edit.ejs", { currDetails });
+
+  let originalImageUrl = currDetails.image.url;
+  let updatedImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
+
+  res.render("listings/edit.ejs", { currDetails, updatedImageUrl });
 };
 
 module.exports.updateListing = async (req, res) => {
   let { id } = req.params;
   // console.log(req.body.listing);
 
-  await Listing.findByIdAndUpdate(
+  let listing = await Listing.findByIdAndUpdate(
     id,
     { ...req.body.listing },
     { runValidators: true, new: true }
   );
+
+  if (typeof req.file != "undefined") {
+    let url = req.file.path;
+    let filename = req.file.filename;
+
+    listing.image = { url, filename };
+    await listing.save();
+  }
+
   req.flash("success", "Listing Updated!");
   res.redirect(`/listings/${id}`);
 };
