@@ -11,6 +11,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -28,6 +29,8 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
+const dbUrl = process.env.ATLASDB_URL;
+
 main()
   .then(() => {
     console.log("Connected to db");
@@ -37,11 +40,24 @@ main()
   });
 
 async function main() {
-  mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+  mongoose.connect(dbUrl);
 }
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600,
+});
+
+store.on("error", (e) => {
+  console.log("ERROR in MONGO SESSION STROE", e);
+});
+
 let sessionOptions = {
-  secret: "mySuperSecretCode",
+  store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -70,17 +86,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Demo user
-// app.get("/demoUser", async (req, res) => {
-//   let fakeUser = new User({
-//     email: "student@gmail.com",
-//     username: "delta-student",
-//   });
-
-//   let registereduser = await User.register(fakeUser, "myPassword");
-//   res.send(registereduser);
-// });
-
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
@@ -94,7 +99,6 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Default Error" } = err;
   res.status(statusCode).render("listings/error.ejs", { message });
-  // res.status(statusCode).send(message);
 });
 
 app.listen(port, () => {
